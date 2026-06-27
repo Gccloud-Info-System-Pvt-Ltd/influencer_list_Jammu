@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 40px 16px;
+            color: #1f2937;
+        }
+        .card {
+            max-width: 560px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+            padding: 32px;
+        }
+        h1 { margin: 0 0 24px; font-size: 22px; }
+        .field { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fff;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+        }
+        .error { color: #dc2626; font-size: 12px; margin-top: 4px; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        button:hover { background: #1d4ed8; }
+        .links { text-align: center; margin-top: 16px; font-size: 13px; }
+        .links a { color: #2563eb; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>J & K E-commerce Platform Influencers</h1>
+
+    <form id="influencerForm" th:action="@{/submit}" th:object="${submission}" method="post">
+        <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" th:field="*{name}" placeholder="Enter name" required>
+            <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+        <div class="field">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" th:field="*{phone}" placeholder="Enter phone number" required>
+            <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+        </div>
+        <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" th:field="*{email}" placeholder="Enter email address" required>
+            <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        </div>
+        <div class="field">
+            <label for="instagram">Instagram Profile</label>
+            <input type="url" id="instagram" th:field="*{instagram}" placeholder="Enter Instagram profile link">
+        </div>
+        <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" rows="4" th:field="*{description}" placeholder="Enter description"></textarea>
+        </div>
+        <div class="field">
+            <label for="district">District</label>
+            <select id="district" th:field="*{district}">
+                <option value="">-- Select District --</option>
+                <option value="Anantnag">Anantnag</option>
+                <option value="Bandipora">Bandipora</option>
+                <option value="Baramulla">Baramulla</option>
+                <option value="Budgam">Budgam</option>
+                <option value="Doda">Doda</option>
+                <option value="Ganderbal">Ganderbal</option>
+                <option value="Jammu">Jammu</option>
+                <option value="Kathua">Kathua</option>
+                <option value="Kishtwar">Kishtwar</option>
+                <option value="Kulgam">Kulgam</option>
+                <option value="Kupwara">Kupwara</option>
+                <option value="Poonch">Poonch</option>
+                <option value="Pulwama">Pulwama</option>
+                <option value="Rajouri">Rajouri</option>
+                <option value="Ramban">Ramban</option>
+                <option value="Reasi">Reasi</option>
+                <option value="Samba">Samba</option>
+                <option value="Shopian">Shopian</option>
+                <option value="Srinagar">Srinagar</option>
+                <option value="Udhampur">Udhampur</option>
+            </select>
+        </div>
+<!--        <div class="field">-->
+<!--            <label for="extraOne">Extra One</label>-->
+<!--            <input type="text" id="extraOne" th:field="*{extraOne}" placeholder="Enter extra one">-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="extraTwo">Extra Two</label>-->
+<!--            <input type="text" id="extraTwo" th:field="*{extraTwo}" placeholder="Enter extra two">-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="extraThree">Extra Three</label>-->
+<!--            <input type="text" id="extraThree" th:field="*{extraThree}" placeholder="Enter extra three">-->
+<!--        </div>-->
+        <button type="submit">Submit</button>
+    </form>
+<!--    <div class="links">-->
+<!--        <a th:href="@{/submissions}">View all submissions &rarr;</a>-->
+<!--    </div>-->
+</div>
+
+<script>
+    document.getElementById('influencerForm').addEventListener('submit', function(event) {
+        // 1. Prevent the default form submission (which causes the page reload/redirect)
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const actionUrl = form.getAttribute('action');
+
+        // 2. Send the data asynchronously via fetch
+        fetch(actionUrl, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                // 3. Handle the response
+                if (response.ok) {
+                    // Trigger SweetAlert on success
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Submission received successfully.',
+                        icon: 'success',
+                        confirmButtonColor: '#2563eb'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.reset(); // Optional: Clear the form after successful submission
+                        }
+                    });
+                } else {
+                    // Handle server errors (e.g., validation failed)
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was a problem submitting the form.',
+                        icon: 'error',
+                        confirmButtonColor: '#dc2626'
+                    });
+                }
+            })
+            .catch(error => {
+                // Handle network errors
+                Swal.fire({
+                    title: 'Network Error',
+                    text: 'Could not connect to the server.',
+                    icon: 'error',
+                    confirmButtonColor: '#dc2626'
+                });
+            });
+    });
+</script>
+</body>
+</html>
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Submission Form</title>-->
+<!--    <style>-->
+<!--        * { box-sizing: border-box; }-->
+<!--        body {-->
+<!--            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;-->
+<!--            background: #f4f6f9;-->
+<!--            margin: 0;-->
+<!--            padding: 40px 16px;-->
+<!--            color: #1f2937;-->
+<!--        }-->
+<!--        .card {-->
+<!--            max-width: 560px;-->
+<!--            margin: 0 auto;-->
+<!--            background: #fff;-->
+<!--            border-radius: 12px;-->
+<!--            box-shadow: 0 4px 18px rgba(0,0,0,0.06);-->
+<!--            padding: 32px;-->
+<!--        }-->
+<!--        h1 { margin: 0 0 24px; font-size: 22px; }-->
+<!--        .field { margin-bottom: 16px; }-->
+<!--        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }-->
+<!--        input, textarea, select {-->
+<!--            width: 100%;-->
+<!--            padding: 10px 12px;-->
+<!--            border: 1px solid #d1d5db;-->
+<!--            border-radius: 8px;-->
+<!--            font-size: 14px;-->
+<!--            font-family: inherit;-->
+<!--            background: #fff;-->
+<!--        }-->
+<!--        input:focus, textarea:focus, select:focus {-->
+<!--            outline: none;-->
+<!--            border-color: #2563eb;-->
+<!--            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);-->
+<!--        }-->
+<!--        .error { color: #dc2626; font-size: 12px; margin-top: 4px; }-->
+<!--        button {-->
+<!--            width: 100%;-->
+<!--            padding: 12px;-->
+<!--            background: #2563eb;-->
+<!--            color: #fff;-->
+<!--            border: none;-->
+<!--            border-radius: 8px;-->
+<!--            font-size: 15px;-->
+<!--            font-weight: 600;-->
+<!--            cursor: pointer;-->
+<!--            margin-top: 8px;-->
+<!--        }-->
+<!--        button:hover { background: #1d4ed8; }-->
+<!--        .links { text-align: center; margin-top: 16px; font-size: 13px; }-->
+<!--        .links a { color: #2563eb; text-decoration: none; }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="card">-->
+<!--    <h1>J & K E-commerce Platform Influencers</h1>-->
+<!--    <form th:action="@{/submit}" th:object="${submission}" method="post">-->
+<!--        <div class="field">-->
+<!--            <label for="name">Name</label>-->
+<!--            <input type="text" id="name" th:field="*{name}" placeholder="Enter name" required>-->
+<!--            <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="phone">Phone Number</label>-->
+<!--            <input type="tel" id="phone" th:field="*{phone}" placeholder="Enter phone number" required>-->
+<!--            <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="email">Email</label>-->
+<!--            <input type="email" id="email" th:field="*{email}" placeholder="Enter email address" required>-->
+<!--            <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="instagram">Instagram Profile</label>-->
+<!--            <input type="url" id="instagram" th:field="*{instagram}" placeholder="Enter Instagram profile link">-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="description">Description</label>-->
+<!--            <textarea id="description" rows="4" th:field="*{description}" placeholder="Enter description"></textarea>-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="district">District</label>-->
+<!--            <select id="district" th:field="*{district}">-->
+<!--                <option value="">&#45;&#45; Select District &#45;&#45;</option>-->
+<!--                <option value="Anantnag">Anantnag</option>-->
+<!--                <option value="Bandipora">Bandipora</option>-->
+<!--                <option value="Baramulla">Baramulla</option>-->
+<!--                <option value="Budgam">Budgam</option>-->
+<!--                <option value="Doda">Doda</option>-->
+<!--                <option value="Ganderbal">Ganderbal</option>-->
+<!--                <option value="Jammu">Jammu</option>-->
+<!--                <option value="Kathua">Kathua</option>-->
+<!--                <option value="Kishtwar">Kishtwar</option>-->
+<!--                <option value="Kulgam">Kulgam</option>-->
+<!--                <option value="Kupwara">Kupwara</option>-->
+<!--                <option value="Poonch">Poonch</option>-->
+<!--                <option value="Pulwama">Pulwama</option>-->
+<!--                <option value="Rajouri">Rajouri</option>-->
+<!--                <option value="Ramban">Ramban</option>-->
+<!--                <option value="Reasi">Reasi</option>-->
+<!--                <option value="Samba">Samba</option>-->
+<!--                <option value="Shopian">Shopian</option>-->
+<!--                <option value="Srinagar">Srinagar</option>-->
+<!--                <option value="Udhampur">Udhampur</option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="extraOne">Extra One</label>-->
+<!--            <input type="text" id="extraOne" th:field="*{extraOne}" placeholder="Enter extra one">-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="extraTwo">Extra Two</label>-->
+<!--            <input type="text" id="extraTwo" th:field="*{extraTwo}" placeholder="Enter extra two">-->
+<!--        </div>-->
+<!--        <div class="field">-->
+<!--            <label for="extraThree">Extra Three</label>-->
+<!--            <input type="text" id="extraThree" th:field="*{extraThree}" placeholder="Enter extra three">-->
+<!--        </div>-->
+<!--        <button type="submit">Submit</button>-->
+<!--    </form>-->
+<!--    <div class="links">-->
+<!--        <a th:href="@{/submissions}">View all submissions &rarr;</a>-->
+<!--    </div>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
